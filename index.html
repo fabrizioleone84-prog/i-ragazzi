@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#c8553d">
+<title>I ragazzi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4ede0;
+    --surface:#fffdf8;
+    --surface-2:#faf4e9;
+    --ink:#23201b;
+    --muted:#8c8173;
+    --line:rgba(35,32,27,.10);
+    --accent:#c8553d;
+    --accent-soft:#f6ddd5;
+    --green:#2f6b50;
+    --green-soft:#dceadf;
+    --amber:#b8821f;
+    --radius:18px;
+    --shadow:0 10px 30px -16px rgba(35,32,27,.35);
+    --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+    --font-body:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #fbeede 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #e9f0e6 0%, transparent 55%),
+      var(--paper);
+    display:flex;justify-content:center;align-items:stretch;
+    overscroll-behavior:none;
+  }
+  /* phone frame so it reads as an app on desktop too */
+  .app{
+    width:100%;max-width:440px;min-height:100dvh;
+    background:var(--surface);
+    position:relative;display:flex;flex-direction:column;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  header.bar{
+    padding:18px 20px 14px;
+    background:linear-gradient(180deg,var(--surface) 0%,var(--surface) 60%,transparent 100%);
+    position:sticky;top:0;z-index:5;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand h1{
+    font-family:var(--font-display);font-weight:600;
+    font-size:27px;margin:0;letter-spacing:-.01em;line-height:1;
+  }
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
+    display:inline-block;transform:translateY(-2px);}
+  .brand .sub{margin:4px 0 0;color:var(--muted);font-size:12.5px;font-weight:500;letter-spacing:.02em;}
+
+  main{flex:1;overflow-y:auto;padding:4px 16px 110px;-webkit-overflow-scrolling:touch;}
+  .screen{animation:rise .32s cubic-bezier(.2,.7,.2,1);}
+  @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* date / control row */
+  .controlrow{
+    display:flex;align-items:center;gap:10px;margin:6px 2px 14px;
+  }
+  .field{
+    flex:1;display:flex;flex-direction:column;gap:4px;
+  }
+  .field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  input[type=date],input[type=text],input[type=number]{
+    font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--ink);
+    background:var(--surface-2);border:1px solid var(--line);border-radius:12px;
+    padding:11px 12px;width:100%;
+  }
+  input:focus{outline:none;border-color:var(--accent);background:#fff;}
+
+  .daytotal{
+    display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
+    background:var(--ink);color:#fdf6ea;border-radius:14px;padding:9px 14px;min-width:104px;
+  }
+  .daytotal .lab{font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.7;}
+  .daytotal .val{font-family:var(--font-display);font-size:20px;font-weight:600;line-height:1.1;}
+
+  /* customer card (Oggi) */
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 14px 12px;margin-bottom:12px;
+  }
+  .card.has{border-color:var(--accent-soft);box-shadow:0 8px 22px -18px var(--accent);}
+  .card .crow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .card .cname{font-weight:700;font-size:16px;}
+  .price-tag{font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--accent);}
+  .price-tag.zero{color:var(--muted);font-family:var(--font-body);font-weight:600;font-size:13px;}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{
+    border:1px solid var(--line);background:var(--surface-2);
+    border-radius:999px;padding:8px 13px;font-size:13px;font-weight:600;color:var(--ink);
+    cursor:pointer;transition:transform .08s ease, background .15s, border-color .15s, color .15s;
+    user-select:none;
+  }
+  .chip small{font-weight:500;opacity:.6;margin-left:4px;}
+  .chip:active{transform:scale(.94);}
+  .chip.sel{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .chip.sel small{opacity:.85;}
+  .chip.none{color:var(--muted);}
+  .chip.none.sel{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+  .dolce{
+    margin-top:10px;display:flex;align-items:center;gap:10px;
+    padding-top:10px;border-top:1px dashed var(--line);
+  }
+  .switch{position:relative;width:44px;height:26px;flex:none;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;inset:0;background:#ddd3c4;border-radius:999px;transition:.2s;cursor:pointer;}
+  .slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+  .switch input:checked + .slider{background:var(--green);}
+  .switch input:checked + .slider:before{transform:translateX(18px);}
+  .dolce .dlab{font-size:13.5px;font-weight:600;}
+  .dolce .dsup{color:var(--muted);font-size:12px;margin-left:auto;font-weight:600;}
+
+  /* segmented control */
+  .seg{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:4px;margin:2px 2px 16px;}
+  .seg button{
+    flex:1;border:none;background:transparent;font-family:var(--font-body);
+    font-size:13.5px;font-weight:700;color:var(--muted);padding:9px 6px;border-radius:9px;cursor:pointer;transition:.15s;
+  }
+  .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 4px 12px -8px rgba(0,0,0,.4);}
+
+  /* statement rows */
+  .stmt{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .srow{padding:13px 15px;border-bottom:1px solid var(--line);}
+  .srow:last-child{border-bottom:none;}
+  .srow .top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .srow .nm{font-weight:700;font-size:15px;}
+  .srow .meta{font-size:11.5px;color:var(--muted);margin-top:2px;font-weight:600;}
+  .due{font-family:var(--font-display);font-weight:600;font-size:18px;}
+  .due.open{color:var(--accent);}
+  .due.clear{color:var(--green);}
+  .saldato-badge{font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:3px 9px;border-radius:999px;}
+
+  .actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--font-body);font-weight:700;font-size:12.5px;
+    border:1px solid var(--line);background:var(--surface-2);color:var(--ink);
+    padding:8px 13px;border-radius:10px;cursor:pointer;transition:transform .08s,background .15s;
+  }
+  .btn:active{transform:scale(.96);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.ghost{background:transparent;}
+  .btn.tiny{padding:6px 10px;font-size:11.5px;}
+
+  .grand{
+    margin-top:14px;background:var(--ink);color:#fdf6ea;border-radius:var(--radius);
+    padding:16px 18px;display:flex;justify-content:space-between;align-items:center;
+  }
+  .grand .lab{font-size:12px;text-transform:uppercase;letter-spacing:.07em;opacity:.75;font-weight:700;}
+  .grand .val{font-family:var(--font-display);font-size:25px;font-weight:600;}
+
+  /* order detail list (per giorno / espanso) */
+  .olist{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+  .oitem{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;}
+  .oitem .od{font-size:12px;color:var(--muted);font-weight:600;width:64px;flex:none;}
+  .oitem .ol{font-size:13.5px;font-weight:600;flex:1;}
+  .oitem .op{font-weight:700;font-size:13.5px;}
+  .check{width:24px;height:24px;border-radius:7px;border:2px solid #cfc6b6;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;background:#fff;}
+  .check.on{background:var(--green);border-color:var(--green);}
+  .check.on::after{content:"✓";color:#fff;font-size:14px;font-weight:800;}
+
+  .empty{text-align:center;color:var(--muted);padding:46px 20px;font-weight:600;font-size:14px;}
+  .empty .em{font-size:30px;display:block;margin-bottom:8px;}
+
+  /* clienti */
+  .clist{display:flex;flex-direction:column;gap:10px;}
+  .crow2{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 10px 8px 14px;}
+  .crow2 input{border:none;background:transparent;font-weight:700;padding:6px 0;font-size:15px;}
+  .crow2 input:focus{outline:none;}
+  .iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted);flex:none;}
+  .iconbtn:active{transform:scale(.92);}
+  .addbtn{width:100%;margin-top:14px;border:1.5px dashed var(--line);background:transparent;color:var(--accent);
+    font-weight:700;font-size:14px;padding:13px;border-radius:14px;cursor:pointer;}
+
+  /* setup */
+  .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);
+    border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;}
+  .setrow .sl{font-weight:600;font-size:14px;}
+  .setrow .ri{display:flex;align-items:center;gap:6px;}
+  .setrow input{width:84px;text-align:right;}
+  .setrow .eur{color:var(--muted);font-weight:700;}
+  .danger{margin-top:18px;}
+  .btn.warn{color:var(--accent);border-color:var(--accent-soft);background:var(--accent-soft);}
+
+  .note{color:var(--muted);font-size:12px;line-height:1.5;margin:14px 2px 0;font-weight:500;}
+
+  /* bottom nav */
+  nav.tabs{
+    position:absolute;left:0;right:0;bottom:0;
+    background:rgba(255,253,248,.92);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+    z-index:6;
+  }
+  nav.tabs button{
+    flex:1;border:none;background:transparent;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;
+    color:var(--muted);font-family:var(--font-body);font-weight:700;font-size:10.5px;letter-spacing:.02em;
+  }
+  nav.tabs button .ic{font-size:20px;line-height:1;}
+  nav.tabs button.on{color:var(--accent);}
+
+  .sectitle{font-family:var(--font-display);font-weight:600;font-size:20px;margin:6px 2px 12px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="brand">
+      <h1>I ragazzi</h1><span class="dot"></span>
+    </div>
+    <p class="sub" id="subtitle">Estratto conto del ristorante</p>
+  </header>
+
+  <main id="screen"></main>
+
+  <nav class="tabs" id="tabs">
+    <button data-nav="oggi" class="on"><span class="ic">🍽️</span>Oggi</button>
+    <button data-nav="conti"><span class="ic">🧾</span>Conti</button>
+    <button data-nav="clienti"><span class="ic">👥</span>Clienti</button>
+    <button data-nav="setup"><span class="ic">⚙️</span>Setup</button>
+  </nav>
+</div>
+
+<script>
+/* ============================================================
+   I RAGAZZI — web app (HTML/CSS/JS, mobile-first)
+   Pronta per essere impacchettata come app Android.
+   I dati restano salvati sul dispositivo (localStorage),
+   con fallback in memoria se lo storage non e' disponibile.
+   ============================================================ */
+
+/* ---------- Storage robusto (LS con fallback in memoria) ---------- */
+const Store = (() => {
+  let mem = {}, hasLS = false;
+  try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); hasLS = true; } catch(e){ hasLS = false; }
+  return {
+    get(k){ try{ if(hasLS) return localStorage.getItem(k);}catch(e){} return (k in mem)?mem[k]:null; },
+    set(k,v){ try{ if(hasLS){ localStorage.setItem(k,v); return; } }catch(e){} mem[k]=v; }
+  };
+})();
+
+/* ---------- Stato ---------- */
+const KEY = 'iragazzi.v1';
+const DEFAULT_MENU = [
+  {key:'primo',           label:'Solo primo',          short:'Primo',     price:6},
+  {key:'primo_contorno',  label:'Primo e contorno',    short:'Primo+C',   price:8},
+  {key:'secondo_contorno',label:'Secondo e contorno',  short:'Secondo+C', price:10},
+  {key:'completo',        label:'Menu completo',       short:'Completo',  price:12},
+];
+let state = load();
+
+function load(){
+  const raw = Store.get(KEY);
+  if(raw){ try{ return JSON.parse(raw); }catch(e){} }
+  return {
+    customers: Array.from({length:10}, (_,i)=>({id:'c'+(i+1), name:'Cliente '+(i+1)})),
+    orders: [],            // {date, cid, menu, dolce, paid}
+    menu: DEFAULT_MENU.map(m=>({...m})),
+    dolce: 2.5,
+  };
+}
+function save(){ Store.set(KEY, JSON.stringify(state)); }
+
+/* ---------- Utilita' ---------- */
+const eur = n => '€ ' + (Math.round(n*100)/100).toFixed(2).replace('.',',');
+function todayISO(){ const d=new Date(); return iso(d); }
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function prettyDate(s){
+  const d=new Date(s+'T00:00:00');
+  const gg=['dom','lun','mar','mer','gio','ven','sab'][d.getDay()];
+  const mm=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'][d.getMonth()];
+  return `${gg} ${d.getDate()} ${mm}`;
+}
+function weekRange(s){
+  const d=new Date(s+'T00:00:00');
+  const off=(d.getDay()+6)%7;          // 0 = lunedi
+  const mon=new Date(d); mon.setDate(d.getDate()-off);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  return {start:iso(mon), end:iso(sun)};
+}
+const menuByKey = k => state.menu.find(m=>m.key===k);
+const custById  = id => state.customers.find(c=>c.id===id);
+function getOrder(date,cid){ return state.orders.find(o=>o.date===date && o.cid===cid); }
+function orderPrice(o){ const m=menuByKey(o.menu); if(!m) return 0; return m.price + (o.dolce?state.dolce:0); }
+function orderLabel(o){ const m=menuByKey(o.menu); return (m?m.label:'?') + (o.dolce?' + Dolce':''); }
+
+/* ---------- UI state ---------- */
+let current = 'oggi';
+let oggiDate = todayISO();
+let contiDate = todayISO();
+let contiMode = 'giorno';     // giorno | settimana | totale
+let expanded = null;          // cid espanso nella vista "totale"
+
+const screen = document.getElementById('screen');
+const subtitle = document.getElementById('subtitle');
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b.dataset.nav===current));
+  if(current==='oggi')    { subtitle.textContent='Registra i pranzi del giorno'; renderOggi(); }
+  if(current==='conti')   { subtitle.textContent='Tira dei conti ed estratti'; renderConti(); }
+  if(current==='clienti') { subtitle.textContent='I tuoi clienti'; renderClienti(); }
+  if(current==='setup')   { subtitle.textContent='Menu e prezzi'; renderSetup(); }
+  screen.scrollTop = screen.scrollTop; // keep
+}
+
+/* ---------- OGGI ---------- */
+function renderOggi(){
+  const dayTotal = state.orders.filter(o=>o.date===oggiDate).reduce((s,o)=>s+orderPrice(o),0);
+  let html = `
+    <div class="screen">
+      <div class="controlrow">
+        <div class="field">
+          <label>Giornata</label>
+          <input type="date" id="oggiDate" value="${oggiDate}">
+        </div>
+        <div class="daytotal">
+          <span class="lab">Totale giorno</span>
+          <span class="val">${eur(dayTotal)}</span>
+        </div>
+      </div>`;
+
+  state.customers.forEach(c=>{
+    const o = getOrder(oggiDate, c.id);
+    const price = o ? orderPrice(o) : 0;
+    html += `
+      <div class="card ${o?'has':''}">
+        <div class="crow">
+          <span class="cname">${esc(c.name)}</span>
+          <span class="price-tag ${o?'':'zero'}">${o?eur(price):'—'}</span>
+        </div>
+        <div class="chips">
+          ${state.menu.map(m=>`
+            <span class="chip ${o&&o.menu===m.key?'sel':''}" data-action="setmenu" data-cid="${c.id}" data-menu="${m.key}">
+              ${esc(m.short)}<small>${eur(m.price).replace('€ ','')}</small>
+            </span>`).join('')}
+          <span class="chip none ${o?'':'sel'}" data-action="clearorder" data-cid="${c.id}">—</span>
+        </div>
+        <div class="dolce">
+          <label class="switch">
+            <input type="checkbox" data-action="dolce" data-cid="${c.id}" ${o&&o.dolce?'checked':''} ${o?'':'disabled'}>
+            <span class="slider"></span>
+          </label>
+          <span class="dlab">Dolce</span>
+          <span class="dsup">+ ${eur(state.dolce)}</span>
+        </div>
+      </div>`;
+  });
+  html += `</div>`;
+  screen.innerHTML = html;
+}
+
+/* ---------- CONTI ---------- */
+function renderConti(){
+  let html = `
+    <div class="screen">
+      <div class="controlrow">
+        <div class="field">
+          <label>Estratto al</label>
+          <input type="date" id="contiDate" value="${contiDate}">
+        </div>
+      </div>
+      <div class="seg">
+        <button data-action="contimode" data-mode="giorno"    class="${contiMode==='giorno'?'on':''}">Per giorno</button>
+        <button data-action="contimode" data-mode="settimana" class="${contiMode==='settimana'?'on':''}">Settimana</button>
+        <button data-action="contimode" data-mode="totale"    class="${contiMode==='totale'?'on':''}">Totale</button>
+      </div>`;
+
+  if(contiMode==='giorno')    html += viewGiorno();
+  if(contiMode==='settimana') html += viewSettimana();
+  if(contiMode==='totale')    html += viewTotale();
+
+  html += `</div>`;
+  screen.innerHTML = html;
+}
+
+function viewGiorno(){
+  const orders = state.orders.filter(o=>o.date===contiDate);
+  if(!orders.length) return emptyBox('Nessun ordine in questa giornata');
+  let tot=0, out=`<div class="sectitle">${prettyDate(contiDate)}</div><div class="olist">`;
+  orders.forEach(o=>{
+    const p=orderPrice(o); tot+=p; const c=custById(o.cid);
+    out+=`<div class="oitem">
+        <div class="check ${o.paid?'on':''}" data-action="togglepaid" data-cid="${o.cid}" data-date="${o.date}"></div>
+        <span class="ol">${esc(c?c.name:'?')} · <span style="color:var(--muted)">${esc(orderLabel(o))}</span></span>
+        <span class="op">${eur(p)}</span>
+      </div>`;
+  });
+  out+=`</div>`;
+  out+=grand('Totale giornata', tot);
+  return out;
+}
+
+function viewSettimana(){
+  const {start,end}=weekRange(contiDate);
+  let grandDue=0, rows='';
+  state.customers.forEach(c=>{
+    const os=state.orders.filter(o=>o.cid===c.id && o.date>=start && o.date<=end);
+    if(!os.length) return;
+    const speso=os.reduce((s,o)=>s+orderPrice(o),0);
+    const pagato=os.filter(o=>o.paid).reduce((s,o)=>s+orderPrice(o),0);
+    const due=speso-pagato; grandDue+=due;
+    rows+=stmtRow(c, speso, pagato, due, `data-action="paidweek" data-cid="${c.id}"`);
+  });
+  if(!rows) return emptyBox('Nessun ordine in questa settimana');
+  const head=`<div class="sectitle">Settimana · ${prettyDate(start)} → ${prettyDate(end)}</div>`;
+  return head + `<div class="stmt">${rows}</div>` + grand('Da incassare (settimana)', grandDue);
+}
+
+function viewTotale(){
+  let grandDue=0, rows='';
+  state.customers.forEach(c=>{
+    const os=state.orders.filter(o=>o.cid===c.id && o.date<=contiDate);
+    const speso=os.reduce((s,o)=>s+orderPrice(o),0);
+    const pagato=os.filter(o=>o.paid).reduce((s,o)=>s+orderPrice(o),0);
+    const due=speso-pagato; grandDue+=due;
+    rows+=stmtRow(c, speso, pagato, due, `data-action="expand" data-cid="${c.id}"`, true);
+    if(expanded===c.id){
+      rows+=detailBlock(c, contiDate);
+    }
+  });
+  return `<div class="sectitle">Estratto al ${prettyDate(contiDate)}</div>`
+       + `<div class="stmt">${rows}</div>`
+       + grand('Totale da incassare', grandDue);
+}
+
+function stmtRow(c, speso, pagato, due, actionAttr, chevron){
+  const saldato = speso>0 && due<=0.001;
+  return `<div class="srow">
+      <div class="top">
+        <div>
+          <div class="nm">${esc(c.name)} ${chevron?`<span style="color:var(--muted);font-size:12px">${expanded===c.id?'▲':'▾'}</span>`:''}</div>
+          <div class="meta">Speso ${eur(speso)} · Pagato ${eur(pagato)}</div>
+        </div>
+        ${ speso===0
+            ? `<span class="due" style="color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:700">—</span>`
+            : saldato
+              ? `<span class="saldato-badge">saldato</span>`
+              : `<span class="due open">${eur(due)}</span>` }
+      </div>
+      ${ (speso>0 && !saldato)
+          ? `<div class="actions">
+               <button class="btn primary tiny" ${actionAttr}>${chevron?'Dettaglio':'Salda settimana'}</button>
+               ${!chevron?'':''}
+             </div>`
+          : (chevron && speso>0 ? `<div class="actions"><button class="btn ghost tiny" ${actionAttr}>Dettaglio</button></div>`:'') }
+    </div>`;
+}
+
+function detailBlock(c, upto){
+  const os=state.orders.filter(o=>o.cid===c.id && o.date<=upto).sort((a,b)=>a.date<b.date?-1:1);
+  if(!os.length) return '';
+  let inner=`<div style="padding:0 15px 14px"><div class="olist">`;
+  os.forEach(o=>{
+    inner+=`<div class="oitem">
+        <div class="check ${o.paid?'on':''}" data-action="togglepaid" data-cid="${o.cid}" data-date="${o.date}"></div>
+        <span class="od">${prettyDate(o.date)}</span>
+        <span class="ol">${esc(orderLabel(o))}</span>
+        <span class="op">${eur(orderPrice(o))}</span>
+      </div>`;
+  });
+  inner+=`</div><div class="actions">
+       <button class="btn primary tiny" data-action="paidall" data-cid="${c.id}">Salda tutto</button>
+     </div></div>`;
+  return inner;
+}
+
+function grand(lab,val){
+  return `<div class="grand"><span class="lab">${lab}</span><span class="val">${eur(val)}</span></div>`;
+}
+function emptyBox(t){ return `<div class="empty"><span class="em">🧾</span>${t}</div>`; }
+
+/* ---------- Backup: esporta / condividi / importa ---------- */
+function backupJSON(){
+  return JSON.stringify({ app:'i-ragazzi', version:1, exportedAt:new Date().toISOString(), data:state }, null, 2);
+}
+async function exportBackup(){
+  const fname = 'i-ragazzi-backup-' + todayISO() + '.json';
+  const blob = new Blob([backupJSON()], {type:'application/json'});
+  // Su mobile: prova a condividere direttamente il file (WhatsApp, email, ecc.)
+  try{
+    const file = new File([blob], fname, {type:'application/json'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:'Backup I ragazzi', text:'Backup dei conti'});
+      backupMsg('Backup condiviso.', 'ok'); return;
+    }
+  }catch(e){ /* l'utente puo' aver annullato: si passa al download */ }
+  // Fallback: scarica il file
+  try{
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+    backupMsg('Backup esportato: ' + fname, 'ok');
+  }catch(e){ backupMsg('Esportazione non riuscita in questa anteprima; funziona nel browser/app.', 'err'); }
+}
+function importBackup(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      const d = parsed && parsed.data ? parsed.data : parsed;   // accetta anche lo stato grezzo
+      if(!d || !Array.isArray(d.customers) || !Array.isArray(d.orders)) throw new Error('formato non valido');
+      state = {
+        customers: d.customers,
+        orders: d.orders,
+        menu: (Array.isArray(d.menu) && d.menu.length) ? d.menu : DEFAULT_MENU.map(m=>({...m})),
+        dolce: (typeof d.dolce === 'number') ? d.dolce : 2.5,
+      };
+      save(); renderSetup();
+      backupMsg(`Backup importato: ${state.customers.length} clienti e ${state.orders.length} ordini ripristinati.`, 'ok');
+    }catch(e){
+      backupMsg('File non valido: non sembra un backup di "I ragazzi".', 'err');
+    }
+  };
+  reader.onerror = () => backupMsg('Impossibile leggere il file.', 'err');
+  reader.readAsText(file);
+}
+function backupMsg(text, kind){
+  const el = document.getElementById('backupmsg');
+  if(el){ el.textContent = text; el.style.color = kind==='err' ? 'var(--accent)' : 'var(--green)'; }
+}
+
+/* ---------- CLIENTI ---------- */
+function renderClienti(){
+  let html=`<div class="screen"><div class="sectitle">Clienti</div><div class="clist">`;
+  state.customers.forEach(c=>{
+    html+=`<div class="crow2">
+        <input type="text" value="${esc(c.name)}" data-action="rename" data-cid="${c.id}">
+        <span class="iconbtn" data-action="delcust" data-cid="${c.id}">✕</span>
+      </div>`;
+  });
+  html+=`</div><button class="addbtn" data-action="addcust">+ Aggiungi cliente</button>
+    <p class="note">Rinomina toccando il nome. Eliminando un cliente si rimuovono anche i suoi ordini.</p></div>`;
+  screen.innerHTML=html;
+}
+
+/* ---------- SETUP ---------- */
+function renderSetup(){
+  let html=`<div class="screen"><div class="sectitle">Menu e prezzi</div>`;
+  state.menu.forEach(m=>{
+    html+=`<div class="setrow">
+        <span class="sl">${esc(m.label)}</span>
+        <span class="ri"><span class="eur">€</span>
+          <input type="number" step="0.5" min="0" value="${m.price}" data-action="setprice" data-key="${m.key}">
+        </span>
+      </div>`;
+  });
+  html+=`<div class="setrow">
+        <span class="sl">Supplemento dolce</span>
+        <span class="ri"><span class="eur">€</span>
+          <input type="number" step="0.5" min="0" value="${state.dolce}" data-action="setdolce">
+        </span>
+      </div>`;
+  const nOrd = state.orders.length, nCli = state.customers.length;
+  html+=`<div class="sectitle" style="margin-top:26px">Backup dati</div>
+      <div class="setrow" style="flex-direction:column;align-items:stretch;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="sl">Dati attuali</span>
+          <span class="meta" style="color:var(--muted);font-weight:600;font-size:12.5px">${nCli} clienti · ${nOrd} ordini</span>
+        </div>
+        <div class="actions" style="margin-top:0">
+          <button class="btn primary" data-action="export">⤓ Esporta / Condividi backup</button>
+          <button class="btn" data-action="importask">⤒ Importa backup</button>
+        </div>
+        <span id="backupmsg" style="font-size:12.5px;font-weight:600"></span>
+        <input type="file" id="importfile" accept="application/json,.json" style="display:none">
+      </div>
+      <p class="note">Esporta ogni tanto un backup e invialo a te stesso (WhatsApp, email…). Se cambi telefono o cancelli l'app, con <b>Importa backup</b> ritrovi tutti i conti. Il file di backup contiene clienti, ordini, pagamenti e prezzi.</p>`;
+
+  html+=`<div class="danger">
+        <button class="btn warn" data-action="resetask">Azzera tutti i dati</button>
+        <span id="resetconfirm"></span>
+      </div>
+      <p class="note">I prezzi modificati valgono anche per gli ordini gia' registrati. I dati sono salvati su questo dispositivo.</p></div>`;
+  screen.innerHTML=html;
+}
+
+/* ============================================================
+   EVENTI (delegation)
+   ============================================================ */
+document.getElementById('tabs').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-nav]'); if(!b) return;
+  current=b.dataset.nav; expanded=null; render();
+});
+
+screen.addEventListener('click', e=>{
+  const el=e.target.closest('[data-action]'); if(!el) return;
+  const a=el.dataset.action, cid=el.dataset.cid;
+
+  if(a==='setmenu'){
+    const ex=getOrder(oggiDate,cid);
+    if(ex){ ex.menu=el.dataset.menu; }
+    else { state.orders.push({date:oggiDate,cid,menu:el.dataset.menu,dolce:false,paid:false}); }
+    save(); renderOggi();
+  }
+  else if(a==='clearorder'){
+    state.orders=state.orders.filter(o=>!(o.date===oggiDate&&o.cid===cid));
+    save(); renderOggi();
+  }
+  else if(a==='contimode'){ contiMode=el.dataset.mode; expanded=null; renderConti(); }
+  else if(a==='togglepaid'){
+    const o=getOrder(el.dataset.date,cid); if(o){ o.paid=!o.paid; save(); renderConti(); }
+  }
+  else if(a==='paidweek'){
+    const {start,end}=weekRange(contiDate);
+    state.orders.forEach(o=>{ if(o.cid===cid&&o.date>=start&&o.date<=end) o.paid=true; });
+    save(); renderConti();
+  }
+  else if(a==='paidall'){
+    state.orders.forEach(o=>{ if(o.cid===cid&&o.date<=contiDate) o.paid=true; });
+    save(); renderConti();
+  }
+  else if(a==='expand'){ expanded = expanded===cid ? null : cid; renderConti(); }
+  else if(a==='delcust'){
+    state.customers=state.customers.filter(c=>c.id!==cid);
+    state.orders=state.orders.filter(o=>o.cid!==cid);
+    save(); renderClienti();
+  }
+  else if(a==='addcust'){
+    let n=1; while(state.customers.some(c=>c.id==='c'+n)) n++;
+    state.customers.push({id:'c'+n, name:'Cliente '+(state.customers.length+1)});
+    save(); renderClienti();
+  }
+  else if(a==='resetask'){
+    const span=document.getElementById('resetconfirm');
+    span.innerHTML=` <button class="btn primary tiny" data-action="resetyes">Conferma</button>`;
+  }
+  else if(a==='export'){ exportBackup(); }
+  else if(a==='importask'){
+    const inp=document.getElementById('importfile'); if(inp) inp.click();
+  }
+  else if(a==='resetyes'){
+    state={ customers:Array.from({length:10},(_,i)=>({id:'c'+(i+1),name:'Cliente '+(i+1)})),
+            orders:[], menu:DEFAULT_MENU.map(m=>({...m})), dolce:2.5 };
+    save(); renderSetup();
+  }
+});
+
+screen.addEventListener('change', e=>{
+  if(e.target.id==='importfile'){
+    const f = e.target.files && e.target.files[0]; if(f) importBackup(f); e.target.value=''; return;
+  }
+  const el=e.target.closest('[data-action]'); if(!el) return;
+  const a=el.dataset.action;
+  if(a==='oggiDate' || el.id==='oggiDate'){ oggiDate=el.value; renderOggi(); }
+  else if(a==='contiDate' || el.id==='contiDate'){ contiDate=el.value; renderConti(); }
+  else if(a==='dolce'){
+    const o=getOrder(oggiDate, el.dataset.cid); if(o){ o.dolce=el.checked; save(); renderOggi(); }
+  }
+  else if(a==='setprice'){
+    const m=menuByKey(el.dataset.key); if(m){ m.price=parseFloat(el.value)||0; save(); }
+  }
+  else if(a==='setdolce'){ state.dolce=parseFloat(el.value)||0; save(); }
+  else if(el.id==='importfile'){
+    const f = el.files && el.files[0]; if(f) importBackup(f); el.value='';
+  }
+});
+
+screen.addEventListener('input', e=>{
+  const el=e.target.closest('[data-action="rename"]'); if(!el) return;
+  const c=custById(el.dataset.cid); if(c){ c.name=el.value; save(); }
+});
+
+/* fallback per i campi data (alcuni browser scattano "input") */
+screen.addEventListener('input', e=>{
+  if(e.target.id==='oggiDate'){ oggiDate=e.target.value; }
+  if(e.target.id==='contiDate'){ contiDate=e.target.value; }
+});
+
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+render();
+</script>
+</body>
+</html>
